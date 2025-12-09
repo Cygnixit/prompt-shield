@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Auditor Zero-Trust</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Más adelante podemos conectar Tailwind o un CSS propio -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Prompt Auditor Zero-Trust</h1>
+    <p>All processing happens in your browser. Zero backend, zero logs.</p>
+  </header>
+
+  <main>
+    <section id="settings-panel">
+      <!-- Aquí irá el toggle de Modo paranoico -->
+      <h2>Ajustes</h2>
+      <p>(Modo paranoico, perfiles, etc.)</p>
+    </section>
+
+    <section id="prompt-input-panel">
+      <h2>Prompt</h2>
+      <textarea id="prompt-input" rows="10" placeholder="Pega aquí tu prompt para auditar..."></textarea>
+      <div>
+        <button id="btn-audit">Auditar Prompt</button>
+        <button id="btn-clear">Limpiar</button>
+      </div>
+      <p id="char-counter">0 / 4000</p>
+    </section>
+
+    <section id="results-panel">
+      <h2>Resultados</h2>
+
+      <div id="summary-panel">
+        <h3>Resumen</h3>
+        <p>Nivel de riesgo: <span id="risk-level">-</span></p>
+        <p>Score de calidad: <span id="quality-score">-</span></p>
+      </div>
+
+      <div id="findings-panel">
+        <h3>Hallazgos</h3>
+        <h4>Privacidad</h4>
+        <ul id="privacy-findings"></ul>
+
+        <h4>Estructura del prompt</h4>
+        <ul id="quality-findings"></ul>
+      </div>
+
+      <div id="suggestions-panel">
+        <h3>Sugerencias</h3>
+        <ul id="suggestions-list"></ul>
+        <button id="btn-copy-suggestions">Copiar sugerencias</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Beta tool · No legal guarantee · Designed with Zero-Trust mindset.</small>
+  </footer>
+
+  <script src="js/app-core.js"></script>
+</body>
+</html>
