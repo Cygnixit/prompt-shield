@@ -313,6 +313,13 @@ body {
   border-color: rgba(148, 163, 184, 0.6);
 }
 
+/* Estado deshabilitado genérico para botones */
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
 /* ===== Resultados / Resumen ===== */
 
 #results-panel h2 {
@@ -394,6 +401,81 @@ body {
   color: var(--accent-primary);
 }
 
+/* ===== Prompt Fixer (Prompt mejorado) ===== */
+
+.prompt-fixer-panel {
+  margin-top: 0.9rem;
+  background: radial-gradient(
+      circle at top right,
+      rgba(56, 189, 248, 0.08),
+      rgba(15, 23, 42, 0.98)
+  );
+}
+
+.prompt-output-textarea {
+  width: 100%;
+  margin-top: 0.4rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  background: radial-gradient(
+      circle at top left,
+      rgba(56, 189, 248, 0.09),
+      rgba(15, 23, 42, 0.96)
+  );
+  color: var(--text-main);
+  padding: 0.65rem 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  min-height: 170px;
+}
+
+.prompt-output-textarea::placeholder {
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.prompt-output-textarea:focus {
+  outline: 1px solid var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary-soft);
+}
+
+.prompt-fixer-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.prompt-fixer-meta {
+  margin-top: 0.65rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.advanced-mode-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  opacity: 0.7;
+}
+
+.advanced-mode-label input {
+  accent-color: var(--accent-secondary);
+}
+
+.prompt-fixer-tag {
+  padding: 0.14rem 0.7rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 /* ===== Footer ===== */
 
 .app-footer {
@@ -425,5 +507,9 @@ body {
 
   .app-header h1 {
     font-size: 1.35rem;
+  }
+
+  .prompt-fixer-meta {
+    align-items: flex-start;
   }
 }

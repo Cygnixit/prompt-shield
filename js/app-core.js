@@ -1,7 +1,10 @@
 // js/app-core.js
-// Punto de entrada para Prompt Shield (UI + consola).
+// Punto de entrada para Prompt Shield (UI + consola + Prompt Fixer).
 
 window.PromptShield = (function () {
+  // Estado en memoria para reutilizar el último análisis en Prompt Fixer
+  let lastAnalysisResult = null;
+
   // ==== API para pruebas en consola ====
   function analyzeFromConsole(text, paranoid = false) {
     if (!window.PromptShieldAnalysis || typeof window.PromptShieldAnalysis.analyze !== "function") {
@@ -234,6 +237,22 @@ window.PromptShield = (function () {
     if (qualityList) qualityList.innerHTML = "";
     if (suggestionsList) suggestionsList.innerHTML = "";
 
+    // Limpiar estado de Prompt Fixer también
+    lastAnalysisResult = null;
+    const improvedOutput = $("improved-prompt-output");
+    const btnRewrite = $("btn-rewrite");
+    const btnCopyImproved = $("btn-copy-improved-prompt");
+
+    if (improvedOutput) {
+      improvedOutput.value = "";
+    }
+    if (btnRewrite) {
+      btnRewrite.disabled = true;
+    }
+    if (btnCopyImproved) {
+      btnCopyImproved.disabled = true;
+    }
+
     setStatus(
       'Pega un prompt en el panel izquierdo y haz clic en "Auditar Prompt" para ver el análisis.'
     );
@@ -277,6 +296,13 @@ window.PromptShield = (function () {
       "Sin hallazgos relevantes en la estructura del prompt."
     );
     renderList(suggestionsList, suggestions, "Sin sugerencias adicionales.");
+
+    // Guardar resultado para Prompt Fixer y habilitar botón
+    lastAnalysisResult = result;
+    const btnRewrite = $("btn-rewrite");
+    if (btnRewrite) {
+      btnRewrite.disabled = false;
+    }
 
     setStatus(
       "Análisis completado. Revisa el riesgo, los hallazgos y las sugerencias antes de enviar tu prompt a la IA."
@@ -337,6 +363,111 @@ window.PromptShield = (function () {
     }
   }
 
+  function copyImprovedPromptToClipboard() {
+    const improvedOutput = $("improved-prompt-output");
+    if (!improvedOutput) return;
+
+    const text = (improvedOutput.value || "").trim();
+    if (!text) {
+      setStatus("No hay un prompt mejorado para copiar en este momento.");
+      return;
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(function () {
+          setStatus("Prompt mejorado copiado al portapapeles.");
+        })
+        .catch(function () {
+          setStatus(
+            "No se pudo copiar el prompt mejorado. Copia manualmente desde el panel."
+          );
+        });
+    } else {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      temp.style.position = "fixed";
+      temp.style.left = "-9999px";
+      document.body.appendChild(temp);
+      temp.select();
+
+      try {
+        document.execCommand("copy");
+        setStatus("Prompt mejorado copiado al portapapeles.");
+      } catch (e) {
+        setStatus(
+          "No se pudo copiar el prompt mejorado. Copia manualmente desde el panel."
+        );
+      } finally {
+        document.body.removeChild(temp);
+      }
+    }
+  }
+
+  function generateImprovedPrompt(promptInput, paranoidToggle) {
+    if (!lastAnalysisResult) {
+      setStatus("Primero audita el prompt antes de generar una versión mejorada.");
+      return;
+    }
+
+    if (!window.PromptShieldRewriter || typeof window.PromptShieldRewriter.rewrite !== "function") {
+      setStatus(
+        "El módulo de reescritura no está disponible. Revisa que prompt-rewriter.js esté cargado."
+      );
+      return;
+    }
+
+    if (!promptInput) {
+      setStatus("No se encontró el campo de prompt.");
+      return;
+    }
+
+    const originalText = promptInput.value || "";
+    if (!originalText.trim()) {
+      setStatus("No hay prompt para reescribir. Pega un prompt primero.");
+      return;
+    }
+
+    const improvedOutput = $("improved-prompt-output");
+    const btnCopyImproved = $("btn-copy-improved-prompt");
+
+    try {
+      const paranoid = !!(paranoidToggle && paranoidToggle.checked);
+
+      const rewriteResult = window.PromptShieldRewriter.rewrite(
+        originalText,
+        lastAnalysisResult,
+        {
+          language: "es",
+          paranoid: paranoid,
+        }
+      );
+
+      if (rewriteResult && rewriteResult.improvedPrompt) {
+        if (improvedOutput) {
+          improvedOutput.value = rewriteResult.improvedPrompt;
+        }
+        if (btnCopyImproved) {
+          btnCopyImproved.disabled = false;
+        }
+
+        setStatus(
+          "Prompt mejorado generado localmente. Revísalo antes de usarlo en la IA."
+        );
+      } else {
+        setStatus(
+          "No se pudo generar una versión mejorada. Revisa el análisis o intenta de nuevo."
+        );
+      }
+    } catch (error) {
+      console.error("Error al generar el prompt mejorado:", error);
+      setStatus(
+        "Ocurrió un error al generar la versión mejorada del prompt. Intenta de nuevo."
+      );
+    }
+  }
+
   // ==== Inicialización de la UI ====
   function initUI() {
     const promptInput = $("prompt-input");
@@ -344,6 +475,9 @@ window.PromptShield = (function () {
     const btnAudit = $("btn-audit");
     const btnClear = $("btn-clear");
     const btnCopySuggestions = $("btn-copy-suggestions");
+    const btnRewrite = $("btn-rewrite");
+    const btnCopyImproved = $("btn-copy-improved-prompt");
+    const improvedOutput = $("improved-prompt-output");
     const charCounter = $("char-counter");
 
     // Si no encontramos el textarea o el botón principal, asumimos que sólo se
@@ -358,6 +492,8 @@ window.PromptShield = (function () {
 
     promptInput.addEventListener("input", function () {
       updateCharCounter(promptInput, charCounter);
+      // Opcional: podrías invalidar lastAnalysisResult si quieres que el análisis
+      // siempre corresponda al texto actual; por ahora lo dejamos tal cual.
     });
 
     btnAudit.addEventListener("click", function () {
@@ -401,6 +537,19 @@ window.PromptShield = (function () {
     if (btnCopySuggestions) {
       btnCopySuggestions.addEventListener("click", function () {
         copySuggestionsToClipboard();
+      });
+    }
+
+    // Wiring Sprint 3: Prompt Fixer
+    if (btnRewrite) {
+      btnRewrite.addEventListener("click", function () {
+        generateImprovedPrompt(promptInput, paranoidToggle);
+      });
+    }
+
+    if (btnCopyImproved && improvedOutput) {
+      btnCopyImproved.addEventListener("click", function () {
+        copyImprovedPromptToClipboard();
       });
     }
   }

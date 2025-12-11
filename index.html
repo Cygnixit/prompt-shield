@@ -39,6 +39,8 @@
 
         <div class="prompt-actions">
           <button id="btn-audit" class="btn btn-primary">Auditar Prompt</button>
+          <!-- Nuevo botón Sprint 3: Prompt Fixer -->
+          <button id="btn-rewrite" class="btn btn-secondary" disabled>Generar versión mejorada</button>
           <button id="btn-clear" class="btn btn-secondary">Limpiar</button>
         </div>
 
@@ -84,6 +86,33 @@
           <ul id="suggestions-list" class="suggestions-list"></ul>
           <button id="btn-copy-suggestions" class="btn btn-ghost">Copiar sugerencias</button>
         </div>
+
+        <!-- NUEVO PANEL Sprint 3: Prompt mejorado -->
+        <section id="prompt-fixer-panel" class="panel prompt-fixer-panel">
+          <h2>Prompt mejorado (beta, local)</h2>
+
+          <textarea
+            id="improved-prompt-output"
+            class="prompt-output-textarea"
+            rows="10"
+            readonly
+            placeholder="Genera primero un análisis y luego pulsa &quot;Generar versión mejorada&quot;."></textarea>
+
+          <div class="prompt-fixer-actions">
+            <button id="btn-copy-improved-prompt" class="btn btn-ghost" disabled>
+              Copiar prompt mejorado
+            </button>
+          </div>
+
+          <p class="prompt-fixer-meta">
+            <label class="advanced-mode-label">
+              <input type="checkbox" disabled>
+              Modo IA avanzado (próximamente)
+            </label>
+            <span class="prompt-fixer-tag">Zero-Trust · 100% local</span>
+          </p>
+        </section>
+        <!-- FIN NUEVO PANEL -->
       </section>
 
       <section id="privacy-panel" class="panel info-panel">
@@ -125,6 +154,8 @@
   <script src="js/pii-analyzer.js"></script>
   <script src="js/quality-evaluator.js"></script>
   <script src="js/analysis-engine.js"></script>
+  <!-- Nuevo script Sprint 3: reescritura local -->
+  <script src="js/prompt-rewriter.js"></script>
   <script src="js/app-core.js"></script>
 </body>
 </html>
