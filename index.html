@@ -2,64 +2,129 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Prompt Auditor Zero-Trust</title>
+  <title>Prompt Shield</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Más adelante podemos conectar Tailwind o un CSS propio -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header>
-  <h1>🛡️ Prompt Shield — Auditor de Prompts Privado</h1>
-  <p>Zero-Trust by design. Todo se procesa en tu navegador. No backend, no logs.</p>
-</header>
+  <header class="app-header">
+    <h1>🛡️ Prompt Shield — Auditor de Prompts Privado</h1>
+    <p>Zero-Trust by design. Todo se procesa en tu navegador. No backend, no logs.</p>
+  </header>
 
-  <main>
-    <section id="settings-panel">
-      <!-- Aquí irá el toggle de Modo paranoico -->
-      <h2>Ajustes</h2>
-      <p>(Modo paranoico, perfiles, etc.)</p>
-    </section>
+  <main class="main-layout">
+    <!-- Columna izquierda: ajustes + input -->
+    <div class="column column-left">
+      <section id="settings-panel" class="panel">
+        <h2>Ajustes</h2>
+        <div class="setting-item">
+          <label class="toggle">
+            <input type="checkbox" id="paranoid-toggle">
+            <span class="toggle-slider" aria-hidden="true"></span>
+            <span class="toggle-label">Modo paranoico (detección más agresiva de PII)</span>
+          </label>
+          <p class="setting-help">
+            Activa este modo si trabajas con datos muy sensibles o quieres una auditoría más estricta.
+          </p>
+        </div>
+      </section>
 
-    <section id="prompt-input-panel">
-      <h2>Prompt</h2>
-      <textarea id="prompt-input" rows="10" placeholder="Pega aquí tu prompt para auditar..."></textarea>
-      <div>
-        <button id="btn-audit">Auditar Prompt</button>
-        <button id="btn-clear">Limpiar</button>
-      </div>
-      <p id="char-counter">0 / 4000</p>
-    </section>
+      <section id="prompt-input-panel" class="panel">
+        <h2>Prompt</h2>
+        <textarea
+          id="prompt-input"
+          rows="12"
+          maxlength="4000"
+          placeholder="Pega aquí tu prompt para auditar antes de enviarlo a ChatGPT, Gemini, Claude, etc."></textarea>
 
-    <section id="results-panel">
-      <h2>Resultados</h2>
+        <div class="prompt-actions">
+          <button id="btn-audit" class="btn btn-primary">Auditar Prompt</button>
+          <button id="btn-clear" class="btn btn-secondary">Limpiar</button>
+        </div>
 
-      <div id="summary-panel">
-        <h3>Resumen</h3>
-        <p>Nivel de riesgo: <span id="risk-level">-</span></p>
-        <p>Score de calidad: <span id="quality-score">-</span></p>
-      </div>
+        <p id="char-counter" class="char-counter">0 / 4000</p>
+      </section>
+    </div>
 
-      <div id="findings-panel">
-        <h3>Hallazgos</h3>
-        <h4>Privacidad</h4>
-        <ul id="privacy-findings"></ul>
+    <!-- Columna derecha: estado + resultados + mensajes -->
+    <div class="column column-right">
+      <section id="status-panel" class="panel status-panel">
+        <p id="status-message" class="status-info">
+          Pega un prompt en el panel izquierdo y haz clic en <strong>"Auditar Prompt"</strong> para ver el análisis.
+        </p>
+      </section>
 
-        <h4>Estructura del prompt</h4>
-        <ul id="quality-findings"></ul>
-      </div>
+      <section id="results-panel" class="panel">
+        <h2>Resultados</h2>
 
-      <div id="suggestions-panel">
-        <h3>Sugerencias</h3>
-        <ul id="suggestions-list"></ul>
-        <button id="btn-copy-suggestions">Copiar sugerencias</button>
-      </div>
-    </section>
+        <div id="summary-panel" class="subpanel">
+          <h3>Resumen</h3>
+          <p>
+            Nivel de riesgo:
+            <span id="risk-level" class="risk-badge risk-none">-</span>
+          </p>
+          <p>
+            Score de calidad:
+            <span id="quality-score" class="quality-score">-</span>
+          </p>
+        </div>
+
+        <div id="findings-panel" class="subpanel">
+          <h3>Hallazgos</h3>
+
+          <h4>Privacidad</h4>
+          <ul id="privacy-findings" class="findings-list"></ul>
+
+          <h4>Estructura del prompt</h4>
+          <ul id="quality-findings" class="findings-list"></ul>
+        </div>
+
+        <div id="suggestions-panel" class="subpanel">
+          <h3>Sugerencias</h3>
+          <ul id="suggestions-list" class="suggestions-list"></ul>
+          <button id="btn-copy-suggestions" class="btn btn-ghost">Copiar sugerencias</button>
+        </div>
+      </section>
+
+      <section id="privacy-panel" class="panel info-panel">
+        <h2>Privacidad y modelo de seguridad</h2>
+        <p>
+          Prompt Shield está diseñado con una filosofía <strong>Zero-Trust</strong>:
+        </p>
+        <ul>
+          <li>Todo el análisis ocurre <strong>localmente</strong> en tu navegador.</li>
+          <li>No se envían tus prompts a ningún servidor.</li>
+          <li>No se almacenan logs de lo que pegas ni de los resultados.</li>
+        </ul>
+        <p>
+          Aun así, trata tus prompts como si fueran datos de producción y revisa siempre antes de compartir.
+        </p>
+      </section>
+
+      <section id="business-panel" class="panel info-panel info-panel-secondary">
+        <h2>Próximamente · Prompt Shield Playbooks</h2>
+        <p>
+          Esta herramienta es sólo el principio. Estamos preparando:
+        </p>
+        <ul>
+          <li>Playbooks para auditar prompts de <strong>legal, marketing, soporte, desarrollo</strong>.</li>
+          <li>Plantillas listas para usar con enfoque en <strong>seguridad y privacidad</strong>.</li>
+          <li>Mini guía práctica para entrenar a tu equipo en <strong>uso responsable de IA</strong>.</li>
+        </ul>
+        <p>
+          Por ahora, disfruta la beta gratuita de Prompt Shield y rompe menos cosas al pegar datos sensibles en la IA 😄.
+        </p>
+      </section>
+    </div>
   </main>
 
-  <footer>
-    <small>Beta tool · No legal guarantee · Designed with Zero-Trust mindset.</small>
+  <footer class="app-footer">
+    <small>Beta tool · No legal guarantee · Designed with a Zero-Trust mindset.</small>
   </footer>
 
+  <script src="js/pii-analyzer.js"></script>
+  <script src="js/quality-evaluator.js"></script>
+  <script src="js/analysis-engine.js"></script>
   <script src="js/app-core.js"></script>
 </body>
 </html>
